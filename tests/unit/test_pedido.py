@@ -90,7 +90,22 @@ def test_situacao_pouco_acima_de_25_cancela():
     pedido = Pedido("Teste", [Item("A", 5.0, 7)])
     assert pedido.situacao(2) == "Cancelado por falta de estoque"
 
-
 # Requisito 3 — sugerir_frete_gratis(sms_service) -> None
 # Use MagicMock para simular o serviço de SMS
 # Escreva os testes ANTES de implementar o método
+
+def test_sms_enviado_com_pedido_abaixo_de_50(pedido_pequeno):
+    sms = MagicMock()
+    pedido_pequeno.sugerir_frete_gratis(sms)
+    sms.enviar.assert_called_once_with("Bruno", 35.0)
+
+def test_sms_nao_enviado_com_pedido_acima_de_50(pedido_grande):
+    sms = MagicMock()
+    pedido_grande.sugerir_frete_gratis(sms)
+    sms.enviar.assert_not_called()
+
+def test_sms_nao_enviado_com_pedido_de_exatamente_50():
+    sms = MagicMock()
+    pedido = Pedido("Teste", [Item("A", 50.0, 1)])
+    pedido.sugerir_frete_gratis(sms)
+    sms.enviar.assert_not_called()
