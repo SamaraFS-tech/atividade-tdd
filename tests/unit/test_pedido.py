@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import MagicMock
 from pedido.pedido import Item, Pedido
 
-
 # =============================================================
 # EXEMPLO — um teste pronto, para você copiar o formato
 # =============================================================
@@ -17,6 +16,34 @@ def test_exemplo_quantidade_total(pedido_pequeno):
 # Escreva um teste para cada bug. Cada teste deve FALHAR
 # no código original. Não altere src/pedido/pedido.py ainda.
 # =============================================================
+# Subtotal deve ser preço x quantidade
+def test_subtotal_considera_quantidade(pedido_pequeno):
+    # 6,00 + (2 x 4,50) = 15,00
+    assert pedido_pequeno.subtotal() == 15.0
+
+
+# Frete grátis a partir de 50,00 (inclusive)
+def test_frete_gratis_com_subtotal_exatamente_50():
+    pedido = Pedido("Teste", [Item("Combo", 25.0, 2)])  # subtotal 50,00
+    assert pedido.tem_frete_gratis() is True
+
+
+# Item mais caro = maior PREÇO UNITÁRIO
+def test_item_mais_caro_usa_preco_unitario():
+    pedido = Pedido("Teste", [Item("A", 10.0, 5), Item("B", 20.0, 1)])
+    assert pedido.item_mais_caro().nome == "B"
+
+
+# Item mais barato = menor PREÇO UNITÁRIO
+def test_item_mais_barato_usa_preco_unitario():
+    pedido = Pedido("Teste", [Item("A", 10.0, 5), Item("B", 20.0, 1)])
+    assert pedido.item_mais_barato().nome == "A"
+
+
+# Desconto percentual sobre o subtotal
+def test_total_com_desconto_percentual():
+    pedido = Pedido("Teste", [Item("A", 100.0, 1)])
+    assert pedido.total_com_desconto(10) == 90.0
 
 
 
